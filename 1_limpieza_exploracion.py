@@ -23,9 +23,9 @@ python_version() ### verificar version de python
 ### Cargar tablas de datos desde github ###
 
 
-action=("data//tbl_Action.csv")  
-employees=("data//tbl_Employee.csv")  
-performance=("data//tbl_Perf.csv")   
+#action=("data//tbl_Action.csv")  
+#employees=("data//tbl_Employee.csv")  
+#performance=("data//tbl_Perf.csv")   
 
 action='https://raw.githubusercontent.com/juancamiloespana/aplicacionesanalitica/main/data/tbl_Action.csv'
 employees= 'https://raw.githubusercontent.com/juancamiloespana/aplicacionesanalitica/main/data/tbl_Employee.csv'
@@ -58,7 +58,7 @@ df_employees["DOB"]=pd.to_datetime(df_employees['DOB'])
 df_performance["PerfDate"]=pd.to_datetime(df_performance['PerfDate'])
 
 #### convertir a categórica
-df_action=df_action.astype({'ActionID': object})
+df_action=df_action.astype({'ActionID': object,"ActID": object})
 df_employees=df_employees.astype({'DepID': object})
 
 
@@ -68,9 +68,7 @@ df_employees=df_employees.drop(["PayRate","MgrID","RaceID"], axis=1) # PayRate n
 
 
 
-
 #### crear base de datos para manejo de datos ####
-
 conn= sql.connect("db_empleados") ### crea una base de datos con el nombre dentro de comillas, si existe crea una conexión.
 
 ### Llevar tablas a base de datos
@@ -85,7 +83,7 @@ df_performance.to_sql("performance",conn,if_exists="replace")
 ### convertir tabla de base de datos en data frame de pandas y hacer consultas ####
 
 read_df_action=pd.read_sql("""
-                           select ActionID,count(*) from action
+                           select ActionID,count(*) as cnt_registros from action
                            group by ActionID""", conn)
 
 read_df_employee=pd.read_sql("""select DepID,count(*) 
@@ -105,6 +103,7 @@ read_df_employee=pd.read_sql("""select Level,count(*)
 cur=conn.cursor() ### para ejecutar querys sql en base de datos create y drop table
 
 cur.execute(" drop table if exists employee2")
+
 cur.execute("""create table employee2 as select *, CASE
                           WHEN Level<10 THEN "<10"
                           WHEN  Level<20 THEN "10-20"
@@ -119,7 +118,10 @@ read_df_employee=pd.read_sql("""select Level2,count(*)
 
 
 #### para analizar fechas esxtrayendo mes año o día
-read_df_performance=pd.read_sql("""select strftime('%d', PerfDate) as D, count(*) from performance group by D""", conn)
+read_df_performance=pd.read_sql("""select PerfDate as fecha, 
+                                count(*) as cnt
+                                from performance 
+                                group by fecha""", conn)
 
 
 
