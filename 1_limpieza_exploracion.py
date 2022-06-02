@@ -28,6 +28,15 @@ df_action.sort_values(by=['EffectiveDt'],ascending=0).head(10)
 df_employees.sort_values(by=['EngDt'],ascending=0).head(10)
 df_performance.sort_values(by=['PerfDate'],ascending=0).head(10)
 
+#### Convertir campos a formato fecha ###
+df_action["EffectiveDt"]=pd.to_datetime(df_action['EffectiveDt'])
+
+
+df_action.info()
+df_employees.info()
+df_performance.info()
+
+
 #### crear base de datos ####
 
 conn= sql.connect("db_empleados") ### crea una base de datos con el nombre dentro de comillas, si existe crea una conexión.
@@ -38,7 +47,8 @@ df_action.to_sql("action",conn,if_exists="replace")
 df_employees.to_sql("employee",conn,if_exists="replace")
 df_performance.to_sql("performance",conn,if_exists="replace")
 
-### convertir tabla de base de datos en data frame de pandas
+
+### convertir tabla de base de datos en data frame de pandas y hacer consultas ####
 
 read_df_action=pd.read_sql('select ActionID,count(*) from action group by ActionID', conn)
 read_df_employee=pd.read_sql('select DepID,count(*) from employee group by DepID', conn)
