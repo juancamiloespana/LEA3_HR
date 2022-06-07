@@ -10,8 +10,6 @@ from sklearn.tree import export_text ## para exportar reglas del árbol
 
 
 
-
-
 conn= sql.connect("db_empleados")
 cur=conn.cursor() ### para ejecutar querys sql en base de datos create y drop table
 
