@@ -10,11 +10,12 @@ create table  performance2 as
 select
 EmpID2,
 avg (case when strftime('%Y',PerfDate) = '2023' then Rating2 else null end) as perf_2023,
+avg (case when strftime('%Y',PerfDate) = '2022' then Rating2 else null end) as perf_2022,
 avg( case when strftime('%Y',PerfDate)  = '2023' then null else Rating2 end) as avg_perf
 from performance
 group by EmpID2
 having perf_2023 is not null ---se fueron antes de 2023 se filtran
-and avg_perf is not null -- entraron en 2023 se filtran
+and perf_2022 is not null -- entraron en 2023 se filtran
 
 ;
 
@@ -30,22 +31,24 @@ with t1 as
 select
 EmpID2,
 count(*) as cnt_total,
-sum(case when ActionID = 10 then 1  else 0 end ) as cnt_mov10,
-sum(case when ActionID = 30 then 1  else 0 end ) as cnt_mov30,
-sum(case when ActionID = 90 then 1  else 0 end ) as cnt_mov90,
-sum(case when ActionID = 91 then 1  else 0 end ) as cnt_mov91,
-max(case when EffectiveDt > '2022-12-31' then '2022-12-31' else   EffectiveDt end) as lst_mov
+--sum(case when ActionID = 10 then 1  else 0 end ) as cnt_mov10, --se eliminan porque no fueron relevantes
+--sum(case when ActionID = 30 then 1  else 0 end ) as cnt_mov30,
+--sum(case when ActionID = 90 then 1  else 0 end ) as cnt_mov90,
+--sum(case when ActionID = 91 then 1  else 0 end ) as cnt_mov91,
+max(EffectiveDt) as lst_mov
 from action
+
+where strftime('%Y',EffectiveDt) <= '2022'
 group by EmpID2
 )
 select
 EmpID2,
-cnt_total,
-cnt_mov10,
-cnt_mov30,
-cnt_mov90,
-cnt_mov91,
-JulianDay('2023-12-31') - JulianDay(lst_mov) as dias_lst_mov
+--cnt_total,
+--cnt_mov10,
+--cnt_mov30,
+--cnt_mov90,
+--cnt_mov91,
+JulianDay('2022-12-31') - JulianDay(lst_mov) as dias_lst_mov
  from t1;
 
 
@@ -108,12 +111,13 @@ drop table if exists base_completa;
 create table base_completa as 
 select 
 a.perf_2023,
+a.perf_2022,
 a.avg_perf,
-b.cnt_total,
-b.cnt_mov10,
-b.cnt_mov30,
-b.cnt_mov90,
-b.cnt_mov91,
+--b.cnt_total,
+--b.cnt_mov10,
+--b.cnt_mov30,
+--b.cnt_mov90,
+--b.cnt_mov91,
 b.dias_lst_mov,
 c.*
 from performance2 a inner join action2 b on a.EmpID2=b.EmpID2
