@@ -1,0 +1,36 @@
+,1289,1
+CitizenDesc_Eligible NonCitizen,0.0,2.3871650848572203
+CitizenDesc_Non-Citizen,0.0,-1.4411806098677904
+DepID_9,0.0,2.145040694904722
+EmpSatisfaction,3.0,0.403109530475571
+EngagementSurvey,4.43,-0.009816385758812666
+FromDiversityJobFairID,0,1.975540219579991
+MaritalDesc_Widowed,0.0,-3.5561760584423445
+PayRate2,16.76,0.02019329578490947
+RaceDesc_Two or more races,1.0,-2.6521263567786533
+RecruitmentSource_Internet Search,0.0,1.7625928371998703
+RecruitmentSource_Newspager/Magazine,0.0,-2.9334096112988477
+RecruitmentSource_Other,0.0,5.675723809277461
+RecruitmentSource_Social Networks - Facebook Twitter etc,1.0,-3.884348236538147
+RecruitmentSource_Word of Mouth,0.0,-2.8638432148449207
+State_AZ,0.0,-1.2038853071947142
+State_CO,0.0,5.982173225427341
+State_CT,0.0,-0.28019070713627275
+State_KY,0.0,-0.8478941794687155
+State_TN,0.0,6.060631414161099
+antiguedad_dias,3286.0,0.0012986328254213793
+avg_perf,39.93719944480101,0.00494693396556605
+dias_lst_mov,2759.0,-0.00016651044687695347
+edad_dias,22444.0,-3.770234915875604e-05
+level2_20-30,0.0,2.7058203975464274
+perf_2022,12.682244052131992,0.03096468273522402
+position_Accountant I,0.0,2.5998197389970006
+position_Administrative Assistant,0.0,5.124869555137342
+position_BI Developer,0.0,-3.353092116591836
+position_Database Administrator,0.0,-2.6231264137474515
+position_IT Manager - DB,0.0,-2.2236461694014262
+position_IT Support,0.0,-1.5272430267240276
+position_Network Engineer,0.0,0.5549864240166615
+position_Shared Services Manager,0.0,2.4628055709652914
+position_Sr. Accountant,0.0,-2.042151332005418
+position_Sr. DBA,0.0,-2.1067790304763894

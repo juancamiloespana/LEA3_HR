@@ -56,3 +56,32 @@ def medir_modelos(modelos,scoring,X,y,cv,cross_val_score,pd):
     
     metric_modelos.columns=["reg_lineal","decision_tree","random_forest","gradient_boosting"]
     return metric_modelos
+
+
+
+def preparar_datos (df):
+   
+    import numpy as np
+    import joblib
+    import a_funciones as funciones  ###archivo de funciones propias
+    from sklearn.impute import SimpleImputer ### para imputación
+    import pandas as pd ### para manejo de datos
+    from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
+
+    #######Cargar y procesar nuevos datos ######
+   
+    
+    #### Cargar modelo y listas 
+    
+   
+    list_cat=joblib.load("list_cat.pkl")
+    list_dummies=joblib.load("list_dummies.pkl")
+    var_names=joblib.load("var_names.pkl")
+
+    ####Ejecutar funciones de transformaciones
+    
+    df=funciones.imputar_f(df,list_cat,SimpleImputer,pd)
+    df_dummies=pd.get_dummies(df,columns=list_dummies)
+    df_dummies=df_dummies[var_names]
+    
+    return df_dummies
