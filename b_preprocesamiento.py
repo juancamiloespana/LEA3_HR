@@ -4,16 +4,21 @@ from platform import python_version ## versión de python
 import pandas as pd ### para manejo de datos
 import sqlite3 as sql #### para bases de datos sql
 import a_funciones as funciones  ###archivo de funciones propias
-
+import sys ## saber ruta de la que carga paquetes
 
 python_version() ### verificar version de python
+
+###Ruta directorio qué tiene paquetes
+sys.path
+sys.path.append('d:\\cod\\cod_HR\\data')
+
 
 
 ####################################################################################################################
 ########################  1. Comprender y limpiar datos ##################################################################
 ####################################################################################################################
 ########   Verificar lectura correcta de los datos
-########   Datos faltantes (eliminar variables si es necesario)
+########   Verificar Datos faltantes (eliminar variables si es necesario) (la imputación está la parte de modelado)
 ########   Tipos de variables (categoricas/numéricas/fechas)
 ########   Niveles en categorícas 
 ########   Observaciones por categoría
@@ -37,13 +42,13 @@ df_performance=pd.read_csv(performance)
 
 ###### Verificar lectura correcta de los datos
 
-df_action.sort_values(by=['EffectiveDt'],ascending=1).head(100)
+df_action.sort_values(by=['EmpID2'],ascending=1).head(100)
 df_employees.sort_values(by=['EngDt'],ascending=0).head(5)
-df_performance.sort_values(by=['PerfDate'],ascending=0).head(10)
+df_performance.sort_values(by=['EmpID2'],ascending=0).head(100)
 
 ##### resumen con información tablas faltantes y tipos de variables y hacer correcciones
 
-df_action.info()
+df_action.info(verbose=True)
 df_employees.info()
 df_performance.info()
 
@@ -76,95 +81,85 @@ df_performance.to_sql("performance",conn,if_exists="replace")
 
 
 ##### verificar categorías y observaciones ######
-#####El número de categorías de una variable influye mucho en la eficiencia y sobre ajust#
+#####El número de categorías de una variable influye mucho en la eficiencia y sobre ajuste#
 ### convertir tabla de base de datos en data frame de pandas y hacer consultas ####
-### se guardan en la base df1 porque por ahora no se necesitan guardar es solo para verificar si requieren cambio
-df1=pd.read_sql("""
-                           select EmpID2, ActionID,
-                           count(*) as cnt_registros 
-                           from action
-                           group by EmpID2,ActionID""", conn)
 
-df1.sort_values(by=['cnt_registros'],ascending=False)
 
-df1=pd.read_sql("""select DepID,count(*) 
+
+pd.read_sql("""select DepID,count(*) 
                             from employee 
                             group by DepID""", conn)
 
-df1=pd.read_sql("""select GenderID,count(*) 
+pd.read_sql("""select GenderID,count(*) 
                             from employee 
                             group by GenderID""", conn)
 
-df1=pd.read_sql("""select Level,count(*) 
+pd.read_sql("""select Level,count(*) 
                             from employee 
                             group by Level""", conn)  ###se debe recategorizar porque tiene muchos niveles y niveles con pocas observaciones
 
-df1=pd.read_sql("""select FromDiversityJobFairID,count(*) 
+pd.read_sql("""select FromDiversityJobFairID,count(*) 
                             from employee 
                             group by FromDiversityJobFairID""", conn)
 
-df1=pd.read_sql("""select MaritalDesc,count(*) 
+pd.read_sql("""select MaritalDesc,count(*) 
                             from employee 
                             group by MaritalDesc""", conn)
 
-df1=pd.read_sql("""select Position ,count(*) as cnt 
+pd.read_sql("""select Position ,count(*) as cnt 
                             from employee2 
-                            group by Position """, conn) ### existen muchos niveles 
-
-df1.sort_values(by=["cnt"], ascending=0) ## verificar los niveles con más observaciones
+                            group by Position order by cnt desc""", conn) ### existen muchos niveles 
 
 
-df1=pd.read_sql("""select State ,count(*) as cnt
+pd.read_sql("""select State ,count(*) as cnt
                             from employee 
-                            group by State """, conn) 
+                            group by State  order by cnt desc""", conn) 
 
 
-df1.sort_values(by=["cnt"], ascending=0)
-
-
-
-df1=pd.read_sql("""select CitizenDesc   ,count(*) as cnt
+pd.read_sql("""select CitizenDesc   ,count(*) as cnt
                             from employee 
                             group by CitizenDesc   """, conn) 
 
 
-df1=pd.read_sql("""select HispanicLatino    ,count(*) as cnt
+pd.read_sql("""select HispanicLatino    ,count(*) as cnt
                             from employee 
                             group by HispanicLatino     """, conn) 
 
 
-df1=pd.read_sql("""select RaceDesc   ,count(*) as cnt
+pd.read_sql("""select RaceDesc   ,count(*) as cnt
                             from employee 
                             group by RaceDesc    """, conn) 
 
 
-df1=pd.read_sql("""select RecruitmentSource  ,count(*) as cnt
+pd.read_sql("""select RecruitmentSource  ,count(*) as cnt
                             from employee 
-                            group by RecruitmentSource   """, conn) 
+                            group by RecruitmentSource order by cnt desc  """, conn) 
 
 
-df1.sort_values(by=["cnt"], ascending=0)
+
 
 
 #### para analizar fechas esxtrayendo mes año o día
-df1=pd.read_sql("""select strftime('%Y',PerfDate) as fecha, 
+
+
+pd.read_sql("""select strftime('%Y',PerfDate) as fecha, 
                                 count(*) as cnt
                                 from performance 
                                 group by fecha""", conn)
 
-df1=pd.read_sql("""select PerfDate as fecha, 
+pd.read_sql("""select PerfDate as fecha, 
                                 count(*) as cnt
                                 from performance 
                                 group by fecha""", conn)
 
 #### para analizar fechas esxtrayendo mes año o día
-df1=pd.read_sql("""select EffectiveDt  as fecha, 
+pd.read_sql("""select EffectiveDt  as fecha, 
                                 count(*) as cnt
                                 from action 
                                 group by fecha""", conn)
 
 
-##### las variables identificadas para recategorizarson: 
+##### las variables identificadas para recategorizar son: 
 ####Level, position, state, hispaniclatino, recruitmente source
 
 
@@ -178,18 +173,9 @@ df1=pd.read_sql("""select EffectiveDt  as fecha,
 cur=conn.cursor()
 funciones.ejecutar_sql('preprocesamientos.sql',cur)
 df=pd.read_sql("select * from base_completa  ",conn)
+pd.read_sql("select count(distinct empID2)  from base_completa  ",conn)
 df.info()
 df.describe(include='all')
 
 
 
-
-
-
-
-import plotly.express as px
-
-wide_df = px.data.medals_wide()
-
-fig = px.bar(wide_df, x="nation", y=["gold", "silver", "bronze"], title="Wide-Form Input")
-fig.show()

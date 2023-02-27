@@ -17,16 +17,23 @@ df=pd.read_sql("select * from base_completa", conn)
 
 
 ### explorar variable respuesta ###
-df.perf_2023.hist(bins=50) ## no hay atípicos
+fig=df.perf_2023.hist(bins=50,ec='black') ## no hay atípicos
+fig.grid(False)
 plt.show()
-df.boxplot("perf_2023")
+
+boxprops = dict(linestyle='-', color='black')
+medianprops = dict(linestyle='-',  color='black')
+fig=df.boxplot("perf_2023",patch_artist=True,
+                boxprops=boxprops,
+                medianprops=medianprops,
+                whiskerprops=dict(color='black'),
+                showmeans=True)
+fig.grid(False)
 plt.show()
 
 ####explorar variables numéricas con histograma
-df.hist(bins=50, figsize=(40,30))
+fig=df.hist(bins=50, figsize=(40,30),grid=False,ec='black')
 plt.show()
-
-###las variables de conteo de movimientos no tienen poder discriminativo por lo que no se deberían incluir
 
 
 ####explorar relación con variable respuesta #######
@@ -52,8 +59,8 @@ plt.show()
 
 ##### analizar relación con categóricas ####
 
-df.boxplot("perf_2023","GenderID",figsize=(5,5))
-df.boxplot("perf_2023","EmpSatisfaction",figsize=(5,5))
+df.boxplot("perf_2023","GenderID",figsize=(5,5),grid=False)
+df.boxplot("perf_2023","EmpSatisfaction",figsize=(5,5),grid=False)
 
 #### también se pueden usar modelos para exploracion ######
 ####Ajustar un modelo para ver importancia de variables categóricas
@@ -66,7 +73,7 @@ X_dummy=pd.get_dummies(X,columns=['DepID','level2','MaritalDesc','FromDiversityJ
 X_dummy.info()
 
 #entrenar modelo
-rtree=tree.DecisionTreeRegressor(max_depth=5)
+rtree=tree.DecisionTreeRegressor(max_depth=3)
 rtree=rtree.fit(X=X_dummy,y=y)
 
 ####Analizar resultados del modelo
@@ -82,13 +89,11 @@ df_import=pd.DataFrame(d)
 pd.set_option('display.max_rows', 100)
 df_import.sort_values(by=['importancia'],ascending=0)
 
-
-
 ##### ver graficamente las categorias más importantes
 
 df.plot(kind="scatter",y="perf_2023",x="dias_lst_mov")
 
-df.boxplot("perf_2023","MaritalDesc",figsize=(5,5))
+df.boxplot("perf_2023","MaritalDesc",figsize=(5,5),grid=False)
 df.boxplot("perf_2023","DepID",figsize=(5,5))
 
 

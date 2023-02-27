@@ -2,7 +2,7 @@
 ----Los comentarios en sql se ponen con --
 ---después de finalizar cada consulta se pone ;
 
------- se filtran empleados que no tengan evaluación de 2023 porque se retiraron antes de la evaluación y los que no tenían antes de 2023 porque entraron ese año
+------ se filtran empleados que no tengan evaluación de 2023 porque se retiraron antes de la evaluación y los que no tenían antes de 2022 porque entraron ese año
 
 drop table if exists performance2;
 
@@ -48,7 +48,7 @@ EmpID2,
 --cnt_mov30,
 --cnt_mov90,
 --cnt_mov91,
-JulianDay('2022-12-31') - JulianDay(lst_mov) as dias_lst_mov
+JulianDay('2022-12-31') - JulianDay(lst_mov) as dias_lst_mov --julianday convierte una fecha en un número de días, se utiliza para calcular diás entre dos fechas
  from t1;
 
 

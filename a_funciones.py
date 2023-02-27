@@ -1,3 +1,10 @@
+import numpy as np
+import pandas as pd
+from sklearn.impute import SimpleImputer ### para imputación
+from sklearn.feature_selection import SelectFromModel
+from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
+import joblib
+from sklearn.preprocessing import StandardScaler ## escalar variables 
 
 ####Este archivo contienen funciones utiles a utilizar en diferentes momentos del proyecto
 
@@ -10,7 +17,7 @@ def ejecutar_sql (nombre_archivo, cur):
   cur.executescript(sql_as_string)
   
   
-def imputar_f (df,list_cat,SimpleImputer,pd):  
+def imputar_f (df,list_cat):  
         
     
     df_c=df[list_cat]
@@ -32,7 +39,7 @@ def imputar_f (df,list_cat,SimpleImputer,pd):
     return df
 
 
-def sel_variables(modelos,X,y, SelectFromModel,np,threshold):
+def sel_variables(modelos,X,y,threshold):
     
     var_names_ac=np.array([])
     for modelo in modelos:
@@ -46,7 +53,7 @@ def sel_variables(modelos,X,y, SelectFromModel,np,threshold):
     return var_names_ac
 
 
-def medir_modelos(modelos,scoring,X,y,cv,cross_val_score,pd):
+def medir_modelos(modelos,scoring,X,y,cv):
 
     metric_modelos=pd.DataFrame()
     for modelo in modelos:
@@ -61,12 +68,7 @@ def medir_modelos(modelos,scoring,X,y,cv,cross_val_score,pd):
 
 def preparar_datos (df):
    
-    import numpy as np
-    import joblib
-    import a_funciones as funciones  ###archivo de funciones propias
-    from sklearn.impute import SimpleImputer ### para imputación
-    import pandas as pd ### para manejo de datos
-    from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
+    
 
     #######Cargar y procesar nuevos datos ######
    
@@ -77,11 +79,18 @@ def preparar_datos (df):
     list_cat=joblib.load("list_cat.pkl")
     list_dummies=joblib.load("list_dummies.pkl")
     var_names=joblib.load("var_names.pkl")
+    scaler=joblib.load( "scaler.pkl") 
 
     ####Ejecutar funciones de transformaciones
     
-    df=funciones.imputar_f(df,list_cat,SimpleImputer,pd)
+    df=imputar_f(df,list_cat)
     df_dummies=pd.get_dummies(df,columns=list_dummies)
-    df_dummies=df_dummies[var_names]
+    df_dummies= df_dummies.loc[:,~df_dummies.columns.isin(['perf_2023','EmpID2'])]
+    X2=scaler.transform(df_dummies)
+    X=pd.DataFrame(X2,columns=df_dummies.columns)
+    X=X[var_names]
     
-    return df_dummies
+    
+    
+    
+    return X
