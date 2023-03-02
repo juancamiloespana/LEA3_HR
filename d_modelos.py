@@ -74,7 +74,17 @@ list_dummies=['DepID', 'level2','MaritalDesc','position', 'State', 'CitizenDesc'
 df_dummies=pd.get_dummies(df3,columns=list_dummies)
 df_dummies.info()
 
-#####  tipos de tratamiento de categóricas: label encoding, ordinal encoding, one hot ecoding
+#####  tipos de tratamiento de categóricas: label encoding(Variable respuesta), ordinal encoding (explicativas), one hot ecoding-get_dummies
+###label encoding
+#gato 1
+#perro 2
+#oso 3
+
+### dep =1  -> 0
+### dep =5  -> 1
+#### dep = 8 -> 2
+
+
 
 ### label encoding: solo target variable
 ### ordinal encoding: solo variables explicativas categóricas ordinales
@@ -84,6 +94,7 @@ df_dummies.info()
 #### bajo = 1
 #### medio =2
 #### alto = 3
+
  ##Nominal (no funciona con ordinal, se debe aplicar one-hotencoding)
 #### casdo = 1
 #### divorciado=2
@@ -175,8 +186,8 @@ param_grid = [{'n_estimators': [3, 500, 100], 'max_features': [5,20],
 
  
 
-#tun_rf=RandomizedSearchCV(m_rf,param_distributions=param_grid,n_iter=18,scoring="neg_root_mean_squared_error")
-#tun_rf.fit(X2,y)
+tun_rf=RandomizedSearchCV(m_rf,param_distributions=param_grid,n_iter=6,scoring="neg_root_mean_squared_error")
+tun_rf.fit(X2,y)
 ### se comenta porque toma mucho tiempo en ejecutar
 
 pd.set_option('display.max_colwidth', 100)
@@ -234,6 +245,7 @@ train_test_rf["test_score"].mean()
 
 
 ##### comparación con predicciones actuales  ############
+
 mse=mean_squared_error(df['perf_2023'], df['perf_2022'])
 rmse= mse**(0.5)
 
@@ -274,8 +286,5 @@ importancia.columns=["variable","peso"]
 
 
 importancia.sort_values(by=["peso"], ascending=False)
-
 importancia.to_excel("feature_importances.xlsx")
-
-
 m_lreg.predict(X2[X2.index==0])

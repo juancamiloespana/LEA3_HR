@@ -3,6 +3,7 @@ import pandas as pd ### para manejo de datos
 import sqlite3 as sql
 import joblib
 import openpyxl ## para exportar a excel
+import numpy as np
 
 
 ###### el despliegue consiste en dejar todo el código listo para una ejecucion automática en el periodo definido:
@@ -18,15 +19,9 @@ if __name__=="__main__":
     #### con base de preprocesamiento con la que se entrenó para evitar perdida de variables por conversión a dummies
 
     funciones.ejecutar_sql('preprocesamientos2.sql',cur) ### con las fechas actualizadas explicativas 2023- predecir 2024
+    df=pd.read_sql('''select  * from base_completa2''',conn)
 
-    df=pd.read_sql('''select 0 as perf_2023,  * from base_completa2
-                    union all
-                    select * from base_completa''',conn)
-
-    df.shape
-    df[df["perf_2023"]==0].count()
-    df.info()
-
+  
     ####Otras transformaciones en python (imputación, dummies y seleccion de variables)
     df_t= funciones.preparar_datos(df)
 
@@ -34,32 +29,29 @@ if __name__=="__main__":
     ##Cargar modelo y predecir
     m_lreg = joblib.load("m_lreg.pkl")
     predicciones=m_lreg.predict(df_t)
+    pd_pred=pd.DataFrame(predicciones, columns=['pred_perf_2024'])
 
 
     ###Crear base con predicciones ####
 
-    pd_pred=pd.DataFrame(predicciones[:4472])
-    pd_pred.shape
-    ID_emp=df[df["perf_2023"]==0]["EmpID2"]
-    perf_pred=pd.concat([ID_emp,pd_pred],axis=1)
-    perf_pred.columns=["EmpID","pred_perf_2024"]
-
-
+    perf_pred=pd.concat([df['EmpID2'],df_t,pd_pred],axis=1)
+   
     ####LLevar a BD para despliegue 
-    perf_pred.to_sql("perf_pred",conn,if_exists="replace")
+    perf_pred.loc[:,['EmpID2', 'pred_perf_2024']].to_sql("perf_pred",conn,if_exists="replace") ## llevar predicciones a BD con ID Empleados
+    
 
     ####ver_predicciones_bajas ###
-    pred_bajo=perf_pred.sort_values(by=["pred_perf_2024"],ascending=True).head(10)
-    emp_pred_bajo= pred_bajo.index
+    emp_pred_bajo=perf_pred.sort_values(by=["pred_perf_2024"],ascending=True).head(10)
     
-    pred=df_t[df_t.index.isin( emp_pred_bajo)]
-    pred.loc['coeficientes']= m_lreg.coef_
-    m_lreg.intercept_
-    pred=pred.T
+    emp_pred_bajo.set_index('EmpID2', inplace=True) 
+    pred=emp_pred_bajo.T
+    
+    coeficientes=pd.DataFrame( np.append(m_lreg.intercept_,m_lreg.coef_) , columns=['coeficientes'])  ### agregar coeficientes
+   
+    pred.to_excel("prediccion.xlsx")   #### exportar predicciones mas bajas y variables explicativas
+    coeficientes.to_excel("coeficientes.xlsx") ### exportar coeficientes para analizar predicciones
+    
 
-    pred.to_excel("prediccion.xlsx")
-    
-    predic=m_lreg.predict(df_t[df_t.index==3947])
 
 
 
