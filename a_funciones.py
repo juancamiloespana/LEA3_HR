@@ -46,7 +46,7 @@ def sel_variables(modelos,X,y,threshold):
         #modelo=modelos[i]
         modelo.fit(X,y)
         sel = SelectFromModel(modelo, prefit=True,threshold=threshold)
-        var_names= sel.get_feature_names_out(modelo.feature_names_in_)
+        var_names= modelo.feature_names_in_[sel.get_support()]
         var_names_ac=np.append(var_names_ac, var_names)
         var_names_ac=np.unique(var_names_ac)
     

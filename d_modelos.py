@@ -12,7 +12,7 @@ from sklearn.model_selection import cross_val_predict, cross_val_score, cross_va
 from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error
 
-import numpy as np
+import numpy as np 
 import matplotlib.pyplot as plt ### gráficos
 from sklearn.model_selection import RandomizedSearchCV
 import joblib  ### para guardar modelos
@@ -23,6 +23,13 @@ import openpyxl
 #### conectarse a base de datos preprocesada
 
 conn=sql.connect("db_empleados")
+
+### ver todas las bases de datos ###
+
+cur=conn.cursor()
+cur.execute("select name from sqlite_master where type='table'")
+cur.fetchall()
+
 
 #### traer bd preprocesada para iniciar modelo ####
 
@@ -134,9 +141,11 @@ m_gbt=GradientBoostingRegressor()
 
 modelos=list([m_lreg,m_rtree, m_rf, m_gbt])
 
-var_names=funciones.sel_variables(modelos,X,y,threshold="1.7*mean")
+var_names=funciones.sel_variables(modelos,X,y,threshold="2*mean")
 var_names.shape
 
+modelo=modelos[0]
+modelo.fit(X,y)
 
 
 ## var1  4
@@ -198,8 +207,6 @@ pd_resultados[["params","mean_test_score"]].sort_values(by="mean_test_score", as
 
 rf_final=tun_rf.best_estimator_ ### Guardar el modelo con hyperparameter tunning
 m_lreg=m_lreg.fit(X2,y)
-
-
 
 
 
