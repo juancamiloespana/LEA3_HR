@@ -5,14 +5,12 @@ import sqlite3 as sql
 import a_funciones as funciones  ###archivo de funciones propias
 from sklearn import linear_model ## para regresión lineal
 from sklearn import tree ###para ajustar arboles de decisión
-from sklearn import svm
 from sklearn.ensemble import RandomForestRegressor ##Ensamble con bagging
 from sklearn.ensemble import GradientBoostingRegressor ###Ensamble boosting
 from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
-from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error
 
-import numpy as np 
+import numpy as np
 import matplotlib.pyplot as plt ### gráficos
 from sklearn.model_selection import RandomizedSearchCV
 import joblib  ### para guardar modelos
@@ -55,8 +53,10 @@ df.info()
 
 df.info() ### no tiene faltantes pero crearemos unos para trabajar
 df.iloc[1,2] =None  ### crear faltante en numérica
-df.iloc[1,6] =None  ### crear faltante en categórica
-df.info()  
+df.iloc[1,10] =None  ### crear faltante en categórica
+df.info()
+
+
 
 ### borrar columnas con na
 df2=df.dropna(axis=0) ### si se pone 1 se borra la columna con na si se pone 0, o se deja vacío, se borra la fila
@@ -77,6 +77,7 @@ df3.info()
 
 list_dummies=['DepID', 'level2','MaritalDesc','position', 'State', 'CitizenDesc', 'HispanicLatino', 'RaceDesc',
        'RecruitmentSource']
+
 
 df_dummies=pd.get_dummies(df3,columns=list_dummies)
 df_dummies.info()
@@ -144,14 +145,13 @@ modelos=list([m_lreg,m_rtree, m_rf, m_gbt])
 var_names=funciones.sel_variables(modelos,X,y,threshold="2*mean")
 var_names.shape
 
-modelo=modelos[0]
-modelo.fit(X,y)
+
 
 
 ## var1  4
-## var 5
-### var 3
-### importancia promedio 4.4
+## var2 5
+### var3 3
+### importancia promedio 4.4*2 = 8.8
 
 ##threshold indica el valor que debe superar la importancia de variables para ser seleccionada
 ###"mean" significa  que tiene que superar el promedio "1.2*mean" tiene que superar a la media por el 20%
@@ -166,8 +166,8 @@ X.info()
 
 ## K fold cross validation   10 ()  1,  9  ---2 (1,3:9)
 
-rmse_df=funciones.medir_modelos(modelos,"neg_root_mean_squared_error",X,y,10) ## base con todas las variables 
-rmse_varsel=funciones.medir_modelos(modelos,"neg_root_mean_squared_error",X2,y,10) ### base con variables seleccionadas
+rmse_df=funciones.medir_modelos(modelos,"neg_root_mean_squared_error",X,y,4) ## base con todas las variables 
+rmse_varsel=funciones.medir_modelos(modelos,"neg_root_mean_squared_error",X2,y,4) ### base con variables seleccionadas
 
 
 rmse=pd.concat([rmse_df,rmse_varsel],axis=1)
@@ -220,6 +220,8 @@ joblib.dump(var_names, "var_names.pkl")  ### para variables con que se entrena m
 joblib.dump(scaler, "scaler.pkl") ## 
 
 
+
+### funcion para cargar objeto guardado ###
 rf_final = joblib.load("rf_final.pkl")
 m_lreg = joblib.load("m_lreg.pkl")
 list_cat=joblib.load("list_cat.pkl")
@@ -290,6 +292,7 @@ importancia1=pd.DataFrame( m_lreg.feature_names_in_)
 importancia2=pd.DataFrame(m_lreg.coef_)
 importancia=pd.concat([importancia1,importancia2],axis=1)
 importancia.columns=["variable","peso"]
+importancia.sort_values('peso')
 
 
 importancia.sort_values(by=["peso"], ascending=False)
