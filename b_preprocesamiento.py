@@ -40,6 +40,8 @@ df_action=pd.read_csv(action)
 df_employees=pd.read_csv(employees)
 df_performance=pd.read_csv(performance)
 
+
+
 ###### Verificar lectura correcta de los datos
 
 df_action.sort_values(by=['EmpID2'],ascending=1).head(100)
@@ -54,13 +56,13 @@ df_performance.info()
 
     
 #### Convertir campos a formato fecha 
-df_action["EffectiveDt"]=pd.to_datetime(df_action['EffectiveDt'])
+df_action["EffectiveDt"]=pd.to_datetime(df_action['EffectiveDt'], format="%d/%b/%Y" )
 
-df_employees["EngDt"]=pd.to_datetime(df_employees['EngDt'])
-df_employees["TermDt"]=pd.to_datetime(df_employees['TermDt'])
-df_employees["DOB"]=pd.to_datetime(df_employees['DOB'])
+df_employees["EngDt"]=pd.to_datetime(df_employees['EngDt'], format="%d/%m/%Y")
+df_employees["TermDt"]=pd.to_datetime(df_employees['TermDt'], format="%d/%b/%Y")
+df_employees["DOB"]=pd.to_datetime(df_employees['DOB'], format="%d/%b/%Y")
 
-df_performance["PerfDate"]=pd.to_datetime(df_performance['PerfDate'])
+df_performance["PerfDate"]=pd.to_datetime(df_performance['PerfDate'], format="%d/%b/%Y")
 
 #### convertir a categórica
 df_action=df_action.astype({'ActionID': object,"ActID": object})
@@ -72,7 +74,7 @@ df_employees=df_employees.drop(["PayRate","MgrID","RaceID","TermDt"], axis=1) # 
 
 #### crear base de datos para manejo de datos ####
 
-conn= sql.connect("db_empleados") ### crea una base de datos con el nombre dentro de comillas, si existe crea una conexión.
+conn= sql.connect("data\\db_empleados") ### crea una base de datos con el nombre dentro de comillas, si existe crea una conexión.
 
 ### Llevar tablas a base de datos
 df_action.to_sql("action",conn,if_exists="replace")
