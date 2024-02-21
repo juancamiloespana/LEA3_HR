@@ -100,7 +100,7 @@ end as RecruitmentSource,
 EngagementSurvey,
 EmpSatisfaction,
 SpecialProjectsCount
-from employee;
+from employee where DateInfo='2022-12-31';
 
 
 ----crear tabla de análisis final -----

@@ -1,16 +1,14 @@
 
 #### Cargar paquetes siempre al inicio
-from platform import python_version ## versión de python
 import pandas as pd ### para manejo de datos
 import sqlite3 as sql #### para bases de datos sql
 import a_funciones as funciones  ###archivo de funciones propias
 import sys ## saber ruta de la que carga paquetes
 
-python_version() ### verificar version de python
 
 ###Ruta directorio qué tiene paquetes
 sys.path
-sys.path.append('d:\\cod\\cod_HR\\data')
+sys.path.append('c:\\cod\\LEA3_HR\\data') ## este comanda agrega una ruta
 
 
 
@@ -27,8 +25,7 @@ sys.path.append('d:\\cod\\cod_HR\\data')
 
 ### Cargar tablas de datos desde github ###
 
-    
-#action=("data//tbl_Action.csv")  
+action=("data//tbl_Action.csv")  
 #employees=("data//tbl_Employee.csv")  
 #performance=("data//tbl_Perf.csv")   
 
@@ -56,7 +53,7 @@ df_performance.info()
 
     
 #### Convertir campos a formato fecha 
-df_action["EffectiveDt"]=pd.to_datetime(df_action['EffectiveDt'], format="%d/%b/%Y" )
+df_action["EffectiveDt"]=pd.to_datetime(df_action['EffectiveDt'] )
 
 df_employees["EngDt"]=pd.to_datetime(df_employees['EngDt'], format="%d/%m/%Y")
 df_employees["TermDt"]=pd.to_datetime(df_employees['TermDt'], format="%d/%b/%Y")
@@ -75,6 +72,7 @@ df_employees=df_employees.drop(["PayRate","MgrID","RaceID","TermDt"], axis=1) # 
 #### crear base de datos para manejo de datos ####
 
 conn= sql.connect("data\\db_empleados") ### crea una base de datos con el nombre dentro de comillas, si existe crea una conexión.
+cur=conn.cursor() ### ejecutar funciones  en BD
 
 ### Llevar tablas a base de datos
 df_action.to_sql("action",conn,if_exists="replace")
@@ -172,7 +170,7 @@ pd.read_sql("""select EffectiveDt  as fecha,
 ##### 3. Se calularán variables con base en la información de empleados como edad, antiguedad
 
 #### para hacer todos los preprocesamienteos se crea archivo .sql que se ejecuta con la función: ejecutar_sql del archivo funciones.py
-cur=conn.cursor()
+
 funciones.ejecutar_sql('preprocesamientos.sql',cur)
 df=pd.read_sql("select * from base_completa  ",conn)
 pd.read_sql("select count(distinct empID2)  from base_completa  ",conn)
