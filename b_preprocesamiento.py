@@ -25,7 +25,7 @@ sys.path.append('c:\\cod\\LEA3_HR\\data') ## este comanda agrega una ruta
 
 ### Cargar tablas de datos desde github ###
 
-action=("data//tbl_Action.csv")  
+#action=("data//tbl_Action.csv")  
 #employees=("data//tbl_Employee.csv")  
 #performance=("data//tbl_Perf.csv")   
 
@@ -65,7 +65,7 @@ df_performance["PerfDate"]=pd.to_datetime(df_performance['PerfDate'], format="%d
 df_action=df_action.astype({'ActionID': object,"ActID": object})
 df_employees=df_employees.astype({'DepID': object})
 
-###Eliminar filas que no se utilicen
+###Eliminar columnas que no se utilicen
 df_employees=df_employees.drop(["PayRate","MgrID","RaceID","TermDt"], axis=1) # PayRate no tiene datos, MgrID no se va a usar es el código del jefe, RaceID se va a usar la descripción
 
 
@@ -80,10 +80,12 @@ df_employees.to_sql("employee",conn,if_exists="replace")
 df_performance.to_sql("performance",conn,if_exists="replace")
 
 
+cur.execute("Select name from sqlite_master where type='table'") ### consultar bases de datos
+cur.fetchall()
+
 ##### verificar categorías y observaciones ######
 #####El número de categorías de una variable influye mucho en la eficiencia y sobre ajuste#
 ### convertir tabla de base de datos en data frame de pandas y hacer consultas ####
-
 
 
 pd.read_sql("""select DepID,count(*) 
@@ -107,7 +109,7 @@ pd.read_sql("""select MaritalDesc,count(*)
                             group by MaritalDesc""", conn)
 
 pd.read_sql("""select Position ,count(*) as cnt 
-                            from employee2 
+                            from employee 
                             group by Position order by cnt desc""", conn) ### existen muchos niveles 
 
 
@@ -172,6 +174,8 @@ pd.read_sql("""select EffectiveDt  as fecha,
 #### para hacer todos los preprocesamienteos se crea archivo .sql que se ejecuta con la función: ejecutar_sql del archivo funciones.py
 
 funciones.ejecutar_sql('preprocesamientos.sql',cur)
+
+
 df=pd.read_sql("select * from base_completa  ",conn)
 pd.read_sql("select count(distinct empID2)  from base_completa  ",conn)
 df.info()
