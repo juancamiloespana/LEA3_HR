@@ -74,6 +74,7 @@ df_employees=df_employees.drop(["PayRate","MgrID","RaceID","TermDt"], axis=1) # 
 conn= sql.connect("data\\db_empleados") ### crea una base de datos con el nombre dentro de comillas, si existe crea una conexión.
 cur=conn.cursor() ### ejecutar funciones  en BD
 
+
 ### Llevar tablas a base de datos
 df_action.to_sql("action",conn,if_exists="replace")
 df_employees.to_sql("employee",conn,if_exists="replace")
@@ -175,6 +176,8 @@ pd.read_sql("""select EffectiveDt  as fecha,
 
 funciones.ejecutar_sql('preprocesamientos.sql',cur)
 
+cur.execute("select name from sqlite_master where type='table'")
+cur.fetchall()
 
 df=pd.read_sql("select * from base_completa  ",conn)
 pd.read_sql("select count(distinct empID2)  from base_completa  ",conn)

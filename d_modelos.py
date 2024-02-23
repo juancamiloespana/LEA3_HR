@@ -20,7 +20,7 @@ import openpyxl
 
 #### conectarse a base de datos preprocesada
 
-conn=sql.connect("db_empleados")
+conn=sql.connect("data\\db_empleados")
 
 ### ver todas las bases de datos ###
 
@@ -267,6 +267,7 @@ predictions=cross_val_predict(m_lreg,X2,y,cv=5)
 pred=pd.DataFrame(predictions,columns=['pred'])
 pdy=y.to_frame()
 error=pdy['perf_2023']-pred['pred']
+
 error.hist(bins=50, grid=False)
 
 

@@ -10,7 +10,7 @@ from sklearn.tree import export_text ## para exportar reglas del árbol
 
 
 
-conn= sql.connect("db_empleados")
+conn= sql.connect("data\\db_empleados")
 cur=conn.cursor() ### para ejecutar querys sql en base de datos create y drop table
 
 df=pd.read_sql("select * from base_completa", conn)
@@ -50,8 +50,8 @@ continuas = ['perf_2023',
              ]
 scatter_matrix(df[continuas], figsize=(12, 8))
 plt.show()
-
-corr_matrix = df.corr()
+cont=df[continuas]
+corr_matrix = cont.corr()
 corr_matrix["perf_2023"].sort_values(ascending=False)
 
 df.plot(kind="scatter",y="perf_2023",x="avg_perf")
