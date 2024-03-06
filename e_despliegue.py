@@ -12,7 +12,7 @@ if __name__=="__main__":
 
 
     ### conectarse a la base de datos ###
-    conn=sql.connect("db_empleados")
+    conn=sql.connect("data\\db_empleados")
     cur=conn.cursor()
 
     ### Ejecutar sql de preprocesamiento inicial y juntarlo 
@@ -27,7 +27,7 @@ if __name__=="__main__":
 
 
     ##Cargar modelo y predecir
-    m_lreg = joblib.load("m_lreg.pkl")
+    m_lreg = joblib.load("salidas\\m_lreg.pkl")
     predicciones=m_lreg.predict(df_t)
     pd_pred=pd.DataFrame(predicciones, columns=['pred_perf_2024'])
 
@@ -48,8 +48,8 @@ if __name__=="__main__":
     
     coeficientes=pd.DataFrame( np.append(m_lreg.intercept_,m_lreg.coef_) , columns=['coeficientes'])  ### agregar coeficientes
    
-    pred.to_excel("prediccion.xlsx")   #### exportar predicciones mas bajas y variables explicativas
-    coeficientes.to_excel("coeficientes.xlsx") ### exportar coeficientes para analizar predicciones
+    pred.to_excel("salidas\\prediccion.xlsx")   #### exportar predicciones mas bajas y variables explicativas
+    coeficientes.to_excel("salidas\\coeficientes.xlsx") ### exportar coeficientes para analizar predicciones
     
 
 

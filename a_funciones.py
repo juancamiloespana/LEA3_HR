@@ -17,24 +17,31 @@ def ejecutar_sql (nombre_archivo, cur):
   sql_file.close
   cur.executescript(sql_as_string)
   
-  
+ 
+
 def imputar_f (df,list_cat):  
         
     
     df_c=df[list_cat]
+
     df_n=df.loc[:,~df.columns.isin(list_cat)]
 
     imputer_n=SimpleImputer(strategy='median')
-    imputer_c=SimpleImputer(strategy='most_frequent')
+    imputer_c=SimpleImputer( strategy='most_frequent')
 
     imputer_n.fit(df_n)
     imputer_c.fit(df_c)
+    imputer_c.get_params()
+    imputer_n.get_params()
 
     X_n=imputer_n.transform(df_n)
     X_c=imputer_c.transform(df_c)
 
+
     df_n=pd.DataFrame(X_n,columns=df_n.columns)
     df_c=pd.DataFrame(X_c,columns=df_c.columns)
+    df_c.info()
+    df_n.info()
 
     df =pd.concat([df_n,df_c],axis=1)
     return df
@@ -77,10 +84,10 @@ def preparar_datos (df):
     #### Cargar modelo y listas 
     
    
-    list_cat=joblib.load("list_cat.pkl")
-    list_dummies=joblib.load("list_dummies.pkl")
-    var_names=joblib.load("var_names.pkl")
-    scaler=joblib.load( "scaler.pkl") 
+    list_cat=joblib.load("salidas\\list_cat.pkl")
+    list_dummies=joblib.load("salidas\\list_dummies.pkl")
+    var_names=joblib.load("salidas\\var_names.pkl")
+    scaler=joblib.load( "salidas\\scaler.pkl") 
 
     ####Ejecutar funciones de transformaciones
     

@@ -9,6 +9,7 @@ from sklearn.ensemble import RandomForestRegressor ##Ensamble con bagging
 from sklearn.ensemble import GradientBoostingRegressor ###Ensamble boosting
 from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
 from sklearn.metrics import mean_squared_error
+from sklearn import metrics
 
 import numpy as np
 import matplotlib.pyplot as plt ### gráficos
@@ -52,9 +53,11 @@ df.info()
 
 
 df.info() ### no tiene faltantes pero crearemos unos para trabajar
-df.iloc[1,2] =None  ### crear faltante en numérica
-df.iloc[1,10] =None  ### crear faltante en categórica
+df.iloc[1,2] =np.nan  ### crear faltante en numérica
+df.iloc[1,10] =np.nan ### crear faltante en categórica
 df.info()
+
+
 
 
 
@@ -129,6 +132,7 @@ df_dummies.info()
 
 y=df_dummies.perf_2023
 X1= df_dummies.loc[:,~df_dummies.columns.isin(['perf_2023','EmpID2'])]
+
 scaler=StandardScaler()
 scaler.fit(X1)
 X2=scaler.transform(X1)
@@ -142,7 +146,7 @@ m_gbt=GradientBoostingRegressor()
 
 modelos=list([m_lreg,m_rtree, m_rf, m_gbt])
 
-var_names=funciones.sel_variables(modelos,X,y,threshold="2*mean")
+var_names=funciones.sel_variables(modelos,X,y,threshold="2.5*mean")
 var_names.shape
 
 
@@ -174,9 +178,13 @@ rmse=pd.concat([rmse_df,rmse_varsel],axis=1)
 rmse.columns=['rl', 'dt', 'rf', 'gb',
        'rl_Sel', 'dt_sel', 'rf_sel', 'gb_Sel']
 
+
 rmse_df.plot(kind='box') #### gráfico para modelos todas las varibles
 rmse_varsel.plot(kind='box') ### gráfico para modelo variables seleccionadas
 rmse.plot(kind='box') ### gráfico para modelos sel y todas las variables
+
+rmse2=rmse[ ['dt', 'rf', 'gb','rl_Sel', 'dt_sel', 'rf_sel', 'gb_Sel']]
+rmse2.plot(kind='box') ### gráfico para modelos sel y todas las variables
 
 rmse.mean() ### medias de mape
 
@@ -212,22 +220,22 @@ m_lreg=m_lreg.fit(X2,y)
 
 ### función para exportar y guardar objetos de python (cualqueira)
 
-joblib.dump(rf_final, "rf_final.pkl") ## 
-joblib.dump(m_lreg, "m_lreg.pkl") ## 
-joblib.dump(list_cat, "list_cat.pkl") ### para realizar imputacion
-joblib.dump(list_dummies, "list_dummies.pkl")  ### para convertir a dummies
-joblib.dump(var_names, "var_names.pkl")  ### para variables con que se entrena modelo
-joblib.dump(scaler, "scaler.pkl") ## 
+joblib.dump(rf_final, "salidas\\rf_final.pkl") ## 
+joblib.dump(m_lreg, "salidas\\m_lreg.pkl") ## 
+joblib.dump(list_cat, "salidas\\list_cat.pkl") ### para realizar imputacion
+joblib.dump(list_dummies, "salidas\\list_dummies.pkl")  ### para convertir a dummies
+joblib.dump(var_names, "salidas\\var_names.pkl")  ### para variables con que se entrena modelo
+joblib.dump(scaler, "salidas\\scaler.pkl") ## 
 
 
 
 ### funcion para cargar objeto guardado ###
-rf_final = joblib.load("rf_final.pkl")
-m_lreg = joblib.load("m_lreg.pkl")
-list_cat=joblib.load("list_cat.pkl")
-list_dummies=joblib.load("list_dummies.pkl")
-var_names=joblib.load("var_names.pkl")
-scaler=joblib.load("scaler.pkl") 
+rf_final = joblib.load("salidas\\rf_final.pkl")
+m_lreg = joblib.load("salidas\\m_lreg.pkl")
+list_cat=joblib.load("salidas\\list_cat.pkl")
+list_dummies=joblib.load("salidas\\list_dummies.pkl")
+var_names=joblib.load("salidas\\var_names.pkl")
+scaler=joblib.load("salidas\\scaler.pkl") 
 
 ###### evaluar modelos afinados finales ###########
 
@@ -276,6 +284,7 @@ plt.boxplot(error,vert=False)
 plt.show()
 
 
+
 predictions2=cross_val_predict(rf_final,X2,y,cv=5)
 
 pred2=pd.DataFrame(predictions2,columns=['pred'])
@@ -287,7 +296,7 @@ plt.boxplot(error2,vert=False)
 plt.show()
 
 
-##### Mirar importancia de variables para tomar acciones ###
+##### Despliegue: Mirar importancia de variables para tomar acciones ###
 pd.set_option('display.max_rows', 100)
 importancia1=pd.DataFrame( m_lreg.feature_names_in_)
 importancia2=pd.DataFrame(m_lreg.coef_)
@@ -297,5 +306,5 @@ importancia.sort_values('peso')
 
 
 importancia.sort_values(by=["peso"], ascending=False)
-importancia.to_excel("feature_importances.xlsx")
+importancia.to_excel("salidas\\feature_importances.xlsx")
 m_lreg.predict(X2[X2.index==0])
