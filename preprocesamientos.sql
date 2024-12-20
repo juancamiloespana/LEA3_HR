@@ -7,6 +7,7 @@
 drop table if exists performance2;
 
 create table  performance2 as 
+
 select
 EmpID2,
 avg (case when strftime('%Y',PerfDate) = '2023' then Rating2 else null end) as perf_2023,
@@ -16,6 +17,8 @@ from performance
 group by EmpID2
 having perf_2023 is not null ---se fueron antes de 2023 se filtran
 and perf_2022 is not null -- entraron en 2023 se filtran
+
+
 
 ;
 

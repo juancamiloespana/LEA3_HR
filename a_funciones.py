@@ -82,8 +82,7 @@ def preparar_datos (df):
    
     
     #### Cargar modelo y listas 
-    
-   
+       
     list_cat=joblib.load("salidas\\list_cat.pkl")
     list_dummies=joblib.load("salidas\\list_dummies.pkl")
     var_names=joblib.load("salidas\\var_names.pkl")

@@ -59,8 +59,6 @@ df.info()
 
 
 
-
-
 ### borrar columnas con na
 df2=df.dropna(axis=0) ### si se pone 1 se borra la columna con na si se pone 0, o se deja vacío, se borra la fila
 df2.info()
@@ -195,7 +193,7 @@ rmse.mean() ### medias de mape
 #############Hiperparameter tunning - no aplica para reg lineal #################3
 
 param_grid = [{'n_estimators': [3, 500, 100], 'max_features': [5,20],
-               'min_samples_split': [100, 20, 5]}]
+               'min_samples_split': [100, 20, 1]}]
 
 ##n_estimator numero de arboles de decisiones
 ##max feratures numero de variables analizadas para la participacion de nodos del arbol
@@ -213,8 +211,10 @@ tun_rf.best_params_
 pd_resultados=pd.DataFrame(resultados)
 pd_resultados[["params","mean_test_score"]].sort_values(by="mean_test_score", ascending=False)
 
-rf_final=tun_rf.best_estimator_ ### Guardar el modelo con hyperparameter tunning
-m_lreg=m_lreg.fit(X2,y)
+rf_tuned=tun_rf.best_estimator_ ### Guardar el modelo con hyperparameter tunning
+## Después de tener hiperparametros afinar en toda la base
+rf_final=rf_tuned.fit(X2,y) 
+m_lreg=m_lreg.fit(X2,y) 
 
 
 
